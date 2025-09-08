@@ -4,7 +4,7 @@ CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source "$CURRENT_DIR/scripts/helpers.sh"
 
 ## which key table to bind in (default: 'prefix')
-floating_table="$(get_tmux_option '@floating_key_table' 'prefix')
+floating_table="$(get_tmux_option '@floating_key_table' 'prefix')"
 
 default_floating_scratch_term="M-i"
 default_floating_scratch_to_active_win="M-h"
