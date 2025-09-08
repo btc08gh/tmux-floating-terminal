@@ -10,6 +10,9 @@ default_floating_scratch_term="M-i"
 default_floating_scratch_to_active_win="M-h"
 default_floating_scratch_to_win="M-l"
 default_floating_active_pane_to_scratch="M-m"
+default_floating_session_name="floating"
+
+floating_session_name="$(get_tmux_option '@floating_session_name' "$default_floating_session_name")"
 
 set_floating_scratch_term_binding() {
 	local key_bindings="$(get_tmux_option "@floating_scratch_term" "$default_floating_scratch_term")"
@@ -18,9 +21,8 @@ set_floating_scratch_term_binding() {
 			tmux bind-key -T "$floating_table" "$key" "if-shell -F '#{==:#S,floating}' { 
 				detach-client 
 			} {
-			set -gF '@last_session_name' '#S'
-			setenv -F FLOATING_SESSION_NAME 'floating'
-			popup -d '#{pane_current_path}' -xC -yC -w70% -h70% -E 'env -u TMUX tmux attach -t \$FLOATING_SESSION_NAME || env -u TMUX tmux new -s \$FLOATING_SESSION_NAME'
+			display-popup -E -d '#{pane_current_path}' -x C -y C -w '70%' -h '70%' \
+			'sh -lc \"env -u TMUX tmux attach -t \"\"$floating_session_name\"\" || env -u TMUX tmux new -s \"\"$floating_session_name\"\"\"'
 		}"
 	done
 }
@@ -32,7 +34,7 @@ set_floating_scratch_to_win() {
 		tmux bind-key -T "$floating_table" "$key" "if-shell -F '#{==:#S,floating}' {
 		 break-pane -d 
 		} {
-		 run-shell 'bash -c \"tmux break-pane -s floating -t \"$(tmux show -gvq '@last_session_name'):\"\"'
+		 run-shell 'bash -lc \"tmux break-pane -s '\"$floating_session_name\"' -t \\\"$(tmux show -gvq '@last_session_name'):\\\"\"'
 	 }"
 	done
 }
@@ -44,7 +46,7 @@ set_floating_scratch_to_active_win() {
 		tmux bind-key -T "$floating_table" "$key" "if-shell -F '#{==:#S,floating}' {
 		 break-pane 
 		 } { 
-		 run-shell 'bash -c \"tmux break-pane -d -s floating -t \"$(tmux show -gvq '@last_session_name'):\"\"'
+		 run-shell 'bash -lc \"tmux break-pane -d -s '\"$floating_session_name\"' -t \\\"$(tmux show -gvq '@last_session_name'):\\\"\"'
 	  }"
 	done
 }
@@ -55,7 +57,8 @@ set_floating_active_pane_to_scratch() {
 	for key in $key_bindings; do
 		tmux bind-key -T "$floating_table" "$key" "if-shell -F '#{==:#S,floating}' {
 		 select-pane -m 
-		 popup -d '#{pane_current_path}' -xC -yC -w70% -h70% -E 'tmux new -A -s floating tmux join-pane'
+		 display-popup -E -d '#{pane_current_path}' -x C -y C -w '70%' -h '70%' \
+           'sh -lc \"env -u TMUX tmux attach -t '\"$floating_session_name\"' || env -u TMUX tmux new -s '\"$floating_session_name\"'; tmux join-pane -s \\\"#{marked}\\\"\"'
 	 }"
 	done
 }
