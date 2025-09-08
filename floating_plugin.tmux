@@ -20,7 +20,7 @@ set_floating_scratch_term_binding() {
 			} {
 			set -gF '@last_session_name' '#S'
 			setenv -F FLOATING_SESSION_NAME 'floating'
-			popup -d '#{pane_current_path}' -xC -yC -w70% -h70% -E 'env -u TMUX tmux attach -t $FLOATING_SESSION_NAME || env -u TMUX tmux new -s $FLOATING_SESSION_NAME'
+			popup -d '#{pane_current_path}' -xC -yC -w70% -h70% -E 'env -u TMUX tmux attach -t \$FLOATING_SESSION_NAME || env -u TMUX tmux new -s \$FLOATING_SESSION_NAME'
 		}"
 	done
 }
